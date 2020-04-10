@@ -75,4 +75,53 @@ let vm = new Vue({
 
 ### attribute
 
-1.
+1. mustache 的方式不能运用在 html 的属性上面，遇到这种情况我们需要使用 v-bind directive。
+2. 我们从前面的例子中可以发现，针对 vue directive，我们要使用引号来包含住 data 对象中的属性。
+3. 针对布尔值的 attribute（存在就意味着 true），v-bind 工作起来就会略有不同，当值为 null, undefined, false 的时候，attribute 甚至不会有这个属性。感觉也能理解，毕竟存在就以为着 true，但是要注意至于这三个值。
+
+### 使用 js 表达式
+
+1. 针对所有的数据绑定，vuejs 都提供了完全的 js 表达式支持。
+2. 针对 mustache 方式和属性的方式都可以的哦
+
+```js
+{{ number }}
+<span v-bind:id="'list-' + id">
+```
+
+3. 这些表达式会在所属的 vue 的实例的数据作用域下作为 js 被解析。
+4. **notice**: 要求必须是单个表达式，而且这些个模板表达式都被放在沙盒中，我们只能访问全局变量的一个白名单，比如 Math 或者 Date。我们绝对不能在模板表达式中试图访问用户定义的全局变量。
+
+### 指令
+
+1. directive： 带有 v-前缀的特殊 attribute。
+2. 这个 attribute 的值预期是一个单个 js 表达式。当然 v-for 是个例外。
+
+#### 参数
+
+1. v-if=“seen”： 跟了一个值，值变化的时候，响应式的影响作用域 dom
+2. 但是有些指令是可以接受参数的。比如`v-bind:id="idNumber"`
+3. 冒号后面是是参数名称，比如上面的 v-bind 用来响应式的更新 html 的 attribute
+4. 还有 v-on 参数
+
+#### 动态参数
+
+1.  前面的例子中 v-bind：id 中的参数是固定的，但是从 vue2.6 开始，我们可以通过 v-bind:[attributename], 得到动态求值参数。
+2.  针对动态参数的值的约束： 我们最终预期得到一个字符串，异常的情况下是 null，这个特殊的 null 值可以被显示的用于移除绑定。
+3.  针对动态参数表达式的约束： 在 html attribute 里面使用空格和引号是无效的，所以我们不能使用空格和引号，所以我们最好不使用或者使用计算属性来代替这种复杂的表达式。在 dom 中使用模板的时候，要避免使用大写符号来命名，因为浏览器器会强制小写的。
+
+```html
+<a v-bind:['list' + idNumber]="value">link</a>
+<!-- 不可以因为这有引号了 -->
+<a v-bind:[someAttribute]="value">link</a>
+<!-- 不可以因为这里的property有大写，除非我们的有someattribute属性 -->
+```
+
+#### 修饰符
+
+1. modifier： 修饰符是半角句号来指明后面的后缀，比如 v-on:submit.prevent, 告诉我们出发了事情调用 event.preventDefault()
+
+### 缩写
+
+1. v-bind: :
+2. v-on: @

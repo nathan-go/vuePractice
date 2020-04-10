@@ -11,6 +11,8 @@
             {{ message }} + {{ rawHTML}}
             <br />
             <span v-html="rawHTML"></span>
+            <br />
+            <button v-bind:isDisable="isDisable">Click</button>
         </div>
         <script>
             let app = new Vue({
@@ -18,6 +20,7 @@
                 data: {
                     message: 'hello vue',
                     rawHTML: `<span style="color:red">hello</span>`,
+                    isDisable: undefined,
                 },
             })
         </script>
