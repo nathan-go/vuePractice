@@ -304,3 +304,55 @@ data: {
 
 1. `<div :style="{ display: ['-webkit-box', '-ms-flexbox', 'flex'] }"></div>`
 2. 2.3 `style`绑定中的属性提供一个包含多值的数组。
+
+## 5. 条件渲染
+
+### v-if
+
+1. v-if 用于条件性渲染一块内容。注意这里的用词： 是渲染
+
+### <template>元素上使用 v-if 条件渲染分组
+
+1. v-if 必须被添加到一个元素上，所以 template 可以当做一个不可见的包裹元素。
+
+### v-else v-else-if
+
+1. 必须跟在上下元素后面
+
+```html
+<div v-if="type === 'A'">
+    A
+</div>
+<div v-if-else="type === 'B'">
+    B
+</div>
+<div v-else>
+    not A/b
+</div>
+```
+
+### 用 key 管理可复用的元素
+
+1. 针对相同的元素我们需要使用唯一值的 key 来区分，这样子 vue 才会重新渲染。可以再看例子官网的例子。
+
+```html
+<input placeholder="Enter" />
+```
+
+### v-show
+
+1. 用于根据条件展示元素的选项是 v-show 指令
+2. 但是 v-show 元素始终会被渲染并保留在 DOM 中，v-show 只是简单的切换元元素的 display 属性。
+3. v-show 不支持 template 元素，也不支持 v-else
+4. v-show 为 false 的时候，display: none
+
+### v-if vs v-show
+
+1. v-if 是真正的条件渲染，因为他会确保在切换过程中条件块内的事件监听器和子组件适当的被销毁和重建。
+2. v-if 也是惰性的
+3. v-show 就简单的多，不过初始条件是什么，元素都是会被渲染的。注意可是简单的 css 进行切换的。
+4. **note**： 总而言之，v-show 有更高的初始渲染开销，v-if 有更高的切换开销。
+
+### v-if 和 v-for
+
+1. 不推荐一起用，v-for 具有比 v-if 更高的优先级

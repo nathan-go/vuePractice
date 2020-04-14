@@ -22,6 +22,7 @@
             {{ reversedMessage }}
             <div :class="{ 'text-error': isError}">Error?</div>
             <div :class="styleObject">Error1?</div>
+            <div v-show="show">show or not?</div>
         </div>
         <script>
             let app = new Vue({
@@ -34,6 +35,7 @@
                     styleObject: {
                         'text-error': true,
                     },
+                    show: true,
                 },
                 computed: {
                     reversedMessage: function () {
