@@ -125,3 +125,182 @@ let vm = new Vue({
 
 1. v-bind: :
 2. v-on: @
+
+## 3. 计算属性和侦听器
+
+### 计算属性
+
+1. 模板内的表达式方便，但是最好不要放很多的逻辑到里面，难以维护。
+2. 这时候我们就应该使用计算属性。
+
+#### 基础例子
+
+```js
+let vm = new Vue({
+    el: '#root',
+    data: {
+        message: 'hello',
+    },
+    computed: {
+        // the getter of the reverseMessage计算属性
+        reverseMessage: function () {
+            // this refer to vm here
+        },
+    },
+})
+
+// 在html中,我们可以通过
+{{ reverseMessage }} or console里面通过vm.reversedMessage来获得
+```
+
+3. 注意两点： 1. 计算属性这个我们给了一个他的 getter， 2. 并且里面的 this 指向了 vm 这个 vue 实例本身, 3. 当我们在 console 里面使用 app.reversedMessage 修改值的时候，出现了错误，因为没有 setter，这就解释了我们在注释里面写 getter 的意思。
+
+#### 计算属性缓存和方法
+
+1. 理论上我们其实也是可以使用方法的。虽然在结果上这两种方式其实一致的，但是，不同的是计算属性是基于他们的响应式依赖进行缓存的。（注意这里的响应式依赖的定义： 只有在响应式依赖发生改变的时候，才会重新求值）
+2. 也就是计算属性：当响应式的依赖发生了变化的时候，就会重新求值。而方法来说，每当触发重新渲染的时候，调用方法将总会再次执行函数。
+
+### 计算属性和侦听属性
+
+1. watch 是一种 vue 提供的更加通用的方式来观察和响应 vue 实例上的数据变动。
+
+```js
+let vm = new Vue({
+    el: '#app',
+    data: {
+        firstName: 'A',
+        lastName: 'B',
+        fullName: 'A B',
+    },
+    watch: {
+        firstName: function (val) {
+            this.fullName = val + this.lastName
+        },
+        lastName: function (val) {
+            this.fullName = this.firstName + val
+        },
+    },
+    computed: {
+        full: function () {
+            return this.firstName + this.lastName
+        },
+    },
+})
+```
+
+2. 我们看到监听属性相比较于计算属性，明显计算属性方便多了的
+
+### 计算属性的 setter
+
+1. 计算属性默认只有 getter，不过在需要的时候你可以提供一个 setter
+
+```js
+computed: {
+  fullName: {
+    get: function() {
+      return this.firstName + this.lastName
+    },
+    set: function(val) {
+      let names = val.split(' ')
+      this.firstName = names[0]
+      this.lastName = names[1]
+    }
+  }
+}
+```
+
+### 侦听器
+
+1. 大多数的情况是使用计算属性是非常合适的，但是在： 需要数据变化时执行异步或开销较大的操作时，这个方式是最有用的。
+2. 看例子，watch 选项允许我们执行异步操作，并且显示我们执行该操作的频率，并在我们得到最终的结果前，设置了中间的状态，这些都是我们计算属性无法实现的。
+
+## 4. class 和 style 绑定
+
+1. 操作元素的 class 列表和内联样式是数据绑定的最常见的一个需求，vue 针对 class 和 style 属性的绑定专门做了增强，避免字符串繁琐的拼接。
+
+### 绑定 html class
+
+#### 对象语法
+
+1. 给:class 传入一个对象
+
+```html
+<div :class="{ active: isActive, 'text-danger': isError}"></div>
+```
+
+2. 表示 active 这个 class 取决于 isActive 的真假。
+3. **注意**： text-danger 这里我们使用了引号，没有的话会出错
+4. 因为当 key 中包含特殊字符如横线“-”（不是下划线）， 空格等 js 不支持的变量时需要用引号。 因为 vue 会将"{}"中的内容应用到 js 中处理！
+5. 即使我们在使用样式对象的时候也是一样，我们需要把 text-error 用引号括起来，这个因为就在 js 里面，所以好说
+6. 我们可以绑定一个数据对象，或者是计算属性都可以。
+
+#### 数组语法
+
+1. :class 可以传入一个数组
+
+```html
+<div :class="[activeClass, errorClass]"></div>
+<div :class="[isActive? activeClass : '', errorClass ]"></div>
+```
+
+```js
+data: {
+  activeClass: 'active',
+  errorClass: 'text-danger'
+}
+```
+
+2. 我们可以在数组中使用三元表达式
+3. 针对三元表达式的写法，会比较繁琐,同样的效果我们可以在数组语法中使用对象语法：
+
+```html
+<div :class="[{active: isActive}, errorClass ]"></div>
+```
+
+4. 解析上面的方式，我们加入一个对象语法在数组语法中的
+
+#### 用在组件上
+
+1. @我们之后再看
+
+### 绑定内联样式
+
+#### 内联样式的对象语法
+
+```html
+<div
+    :style="{ color: activeColor, fontSize: fontSize + 'px', 'font-Size': fm}"
+></div>
+<div
+    :style="{
+  styleObject
+}"
+></div>
+```
+
+```js
+data: {
+  activeColor: 'yellow',
+  fontSize: 30,
+  styleObject: {
+    color: 'red',
+    fontSize: '13px'
+  }
+}
+```
+
+1. 分析一下： style 的对象语法很直观，想 css，但是针对 css 的属性，我们需要使用驼峰式或者是短横线分隔加引号。
+
+#### 内联样式的数组语法
+
+1. 针对多个对象样式对象应用的同一个元素，使用数组语法
+   `<div :style="[baseStyle, overStyle ]">`
+
+#### 自动添加前缀
+
+1. 当时用 v-bind:style 使用的时候，vuejs 会自动侦测并添加响应的前缀，我们不用管啦
+
+#### 多重值，不懂的@@
+
+1. `<div :style="{ display: ['-webkit-box', '-ms-flexbox', 'flex'] }"></div>`
+2. 2.3 `style`绑定中的属性提供一个包含多值的数组。

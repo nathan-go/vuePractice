@@ -4,6 +4,11 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Document</title>
+        <style>
+            .text-error {
+                background-color: lightgreen;
+            }
+        </style>
         <script src="../../vue.js"></script>
     </head>
     <body>
@@ -13,6 +18,10 @@
             <span v-html="rawHTML"></span>
             <br />
             <button v-bind:isDisable="isDisable">Click</button>
+            <br />
+            {{ reversedMessage }}
+            <div :class="{ 'text-error': isError}">Error?</div>
+            <div :class="styleObject">Error1?</div>
         </div>
         <script>
             let app = new Vue({
@@ -21,6 +30,15 @@
                     message: 'hello vue',
                     rawHTML: `<span style="color:red">hello</span>`,
                     isDisable: undefined,
+                    isError: true,
+                    styleObject: {
+                        'text-error': true,
+                    },
+                },
+                computed: {
+                    reversedMessage: function () {
+                        return this.message.split('').reverse().join('')
+                    },
                 },
             })
         </script>
